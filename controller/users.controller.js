@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const generateJWT = require("../utils/generateJWT");
 const role = require("../utils/role");
-// const BakerProfile = require('./bakerProfile.model');
+const BakerProfile = require('../models/bakerProfile.model');
 
 
 const register = asyncWarpper(async (req, res, next) => {
@@ -77,8 +77,35 @@ const getAllUsers = asyncWarpper(async (req, res) => {
 })
 
 
+const getBakerProfile = asyncWarpper(async (req, res, next) => {
+    const bakerId = req.params.id;
+    const { location, rating } = req.body;
+
+    const query = { user: bakerId };
+
+    if (location) {
+        query.location = location;
+    }
+
+    if (rating) {
+        query.rating = rating;
+    }
+
+    const projection = { location: 1, rating: 1, _id: 0};
+    const bakerProfile = await BakerProfile.findOne(query, projection);
+
+    if (!bakerProfile) {
+        const error = appError.create('Baker profile not found', 404, httpStatus.FAIL);
+        return next(error);
+    }
+
+    res.json({ status: httpStatus.SUCCESS, data: { bakerProfile } });
+});
+
+
 module.exports = {
     getAllUsers,
     register,
-    login
+    login,
+    getBakerProfile
 }

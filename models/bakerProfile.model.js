@@ -11,7 +11,7 @@ const bakerProfileSchema = new mongoose.Schema({
         default: 0,
     },
     collectionTimeRange: {
-        type: String, // You can use a more appropriate data type for time range
+        type: Date,
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
